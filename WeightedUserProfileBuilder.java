@@ -37,7 +37,14 @@ public class WeightedUserProfileBuilder implements UserProfileBuilder {
                                                  .mutableCopy();
 
         // TODO Normalize the user's ratings
+        double average;
+        average = ratingVector.sum() / ratingVector.size();
         // TODO Build the user's weighted profile
+        for(Rating r: history)
+        {
+            SparseVector iVec = model.getItemVector(r.getItemId());
+            profile.addScaled(iVec, r.getValue() - average);
+        }
 
         // The profile is accumulated, return it.
         // It is good practice to return a frozen vector.

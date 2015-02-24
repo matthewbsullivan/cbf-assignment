@@ -72,25 +72,20 @@ public class TFIDFModelBuilder implements Provider<TFIDFModel> {
             // TODO Populate the work vector with the number of times each tag is applied to this item
             List<String> tags = dao.getItemTags(item);
             for(String tag: tags) { //iterate over tags
-
-                Long tagKey = tagIds.get(tag);
-                if (work.containsKey(tagKey) /**tag has been seen before**/) {
-                    work.add(tagKey, 1L); /**increase tag count**/
+                if (work.containsKey(tagIds.get(tag)) /**tag has been seen before**/) {
+                    work.add(tagIds.get(tag), 1L); /**increase tag count**/
                 } else {
-                    work.set(tagKey, 1L);/**add tag and set tag count to 1**/
+                    work.set(tagIds.get(tag), 1L);/**add tag and set tag count to 1**/
                 }
             }
             // TODO Increment the document frequency vector once for each unique tag on the item.
             for(VectorEntry frequency: work){
-                Long tagKey = frequency.getKey();
-                if(docFreq.containsKey(tagKey)/**tag has been seen before**/) {
-                    docFreq.add(tagKey, 1L); /**increase document frequency count**/
+                if(docFreq.containsKey(frequency.getKey())/**tag has been seen before**/) {
+                    docFreq.add(frequency.getKey(), 1L); /**increase document frequency count**/
                 } else {
-                    docFreq.set(tagKey, 1L); /**set tag and set document frequency count to 1**/
+                    docFreq.set(frequency.getKey(), 1L); /**set tag and set document frequency count to 1**/
                 }
             }
-
-
             // Save a shrunk copy of the vector (only storing tags that apply to this item) in
             // our map, we'll add IDF and normalize later.
             itemVectors.put(item, work.shrinkDomain());
@@ -120,8 +115,7 @@ public class TFIDFModelBuilder implements Provider<TFIDFModel> {
             // TODO Normalize the TF-IDF vector to be a unit vector
             // HINT The method tv.norm() will give you the Euclidian length of the vector
             double euclidLength = tv.norm();
-            for(VectorEntry e: tv)
-            {
+            for(VectorEntry e: tv) {
                 tv.set(e, e.getValue() / euclidLength);
             }
             
